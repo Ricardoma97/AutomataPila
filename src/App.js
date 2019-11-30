@@ -63,6 +63,7 @@ function App() {
   const[pila,setpila]=useState(['Z']);
   const[string,setstring]=useState('');
   const[pasos,setpasos]=useState([]);
+  const[pasosid,setpasosid]=useState(0);
 
 
   useEffect(()=>{
@@ -91,6 +92,7 @@ function App() {
   }
 
   function NewFunc(){
+
     setfunciones([...funciones,{
     "id":`${funid}`,
     "estado":`${funcionEstado}`,
@@ -107,7 +109,21 @@ function App() {
 
   }
   function pasoApaso(){
-
+    let arr = funciones.filter(obj => (obj.estado === `${estadoActual}` && obj.entry === string.split('')[pasosid] && obj.topStack === pila[pila.length-1]));
+    console.log(arr)
+        /*
+    setpasos([...funciones,{
+    "id":`${funid}`,
+    "estado":`${funcionEstado}`,
+    "entry":`${funcionEntry}`,
+    "topStack":`${funcionTopStack}`,
+    "estadoDestino":`${funcionEstadoDestino}`,
+    "pila":`${funcionPila}`.split(","),
+    "color":"white",
+    "aceptacion":`${funcionAceptacion}`
+  }]
+  )
+  */
   }
   return (
     <div className="App">
@@ -169,7 +185,7 @@ function App() {
             <hr/>
      <div className="container">
       <input id="Cadena a probar" type="text" placeholder="Cadena que probara el Automata" value={string} onChange={handlestringChange}/>
-      <button>Por pasos</button>
+      <button onClick={pasoApaso}>Por pasos</button>
       <button>Todo el proceso</button>
             <div className="row">
               <div className="col s2">
