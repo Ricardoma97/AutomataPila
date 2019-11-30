@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import './App.css';
 
 function App() {
+  const[aceptada,setaceptada]=useState(false);
   const[estadoActual,setestadoActual]=useState('q0');
   const[funid,setfunid]=useState(0);
   const[diccionario,setdiccionario]=useState(['a','b','c']);
@@ -22,7 +23,7 @@ function App() {
       "topStack":'A',
       "estadoDestino":'q0',
       "pila":["A","A"],
-      "color":"green",
+      "color":"white",
       "aceptacion":"false"
     },{
       "id":2,
@@ -31,7 +32,7 @@ function App() {
       "topStack":'Z',
       "estadoDestino":'q1',
       "pila":[],
-      "color":"green",
+      "color":"white",
       "aceptacion":"false"
     },{
       "id":3,
@@ -59,12 +60,11 @@ function App() {
   const[funcionEstadoDestino,setfuncionEstadoDestino]=useState('');
   const[funcionPila,setfuncionPila]=useState('');
   const[funcionAceptacion,setfuncionAceptacion]=useState(true);
-  const[pilasize,setpilasize]=useState(0);
+  const[pilasize,setpilasize]=useState(1);
   const[pila,setpila]=useState(['Z']);
   const[string,setstring]=useState('');
   const[pasos,setpasos]=useState([]);
   const[pasosid,setpasosid]=useState(0);
-
 
   useEffect(()=>{
     setfunid(funciones.length)
@@ -89,10 +89,13 @@ function App() {
   }
   function handlestringChange(e){
     setstring(e.target.value.toString());
+    setestadoActual('q0');
+    setpila(['Z']);
+    setpasosid(0);
+    setpasos([])
   }
 
   function NewFunc(){
-
     setfunciones([...funciones,{
     "id":`${funid}`,
     "estado":`${funcionEstado}`,
@@ -105,25 +108,50 @@ function App() {
   }]);
     setfunid(funid+1);
   }
-  function push(){
-
-  }
+  /*function push(){
+     for(let i=0; i<string.length;i++){
+        pasoApaso();
+        console.log(string.length)
+     }
+  }*/
   function pasoApaso(){
     let arr = funciones.filter(obj => (obj.estado === `${estadoActual}` && obj.entry === string.split('')[pasosid] && obj.topStack === pila[pila.length-1]));
-    console.log(arr)
-        /*
-    setpasos([...funciones,{
-    "id":`${funid}`,
-    "estado":`${funcionEstado}`,
-    "entry":`${funcionEntry}`,
-    "topStack":`${funcionTopStack}`,
-    "estadoDestino":`${funcionEstadoDestino}`,
-    "pila":`${funcionPila}`.split(","),
-    "color":"white",
-    "aceptacion":`${funcionAceptacion}`
-  }]
-  )
-  */
+    console.log(arr);
+    console.log(arr.length);
+    if (arr.length===1){
+      setpasos([...pasos,{
+      "id":`${arr[0].id}`,
+      "estado":`${arr[0].estado}`,
+      "entry":`${arr[0].entry}`,
+      "topStack":`${arr[0].topStack}`,
+      "estadoDestino":`${arr[0].EstadoDestino}`,
+      "pila":`${arr[0].pila}`.split(","),
+      "aceptacion":`${arr[0].aceptacion}`
+      }]);
+      if(arr[0].pila.length===0){
+        //setpila(pila.pop())
+        let temp = [...pila]
+        temp.splice(0,1)
+        setpila(temp)
+        console.log(arr[0].pila.length)
+        setpasosid(pasosid+1);
+      }
+      if(arr[0].pila.length===1){
+        setpila(pila.pop())
+        setpila([...pila,arr[0].pila]);
+        setpasosid(pasosid+1);
+      }
+      if(arr[0].pila.length===2){
+        setpila(pila.pop())
+        setpilasize(pilasize+1)
+        setpila([...pila,arr[0].pila[0],arr[0].pila[1]]);
+        setpasosid(pasosid+1);
+      }
+    }else
+      if(pila.length===1)
+        alert("Esta cadena es aceptada")
+      else
+        alert("Esta cadena no es aceptada")
   }
   return (
     <div className="App">
@@ -147,10 +175,10 @@ function App() {
     </div>
     <div>
     <hr/>
+                    <h5>Transiciones</h5><p>El ejemplo por default prueba leguanje a^n b^n</p>
      <div className="container" id="tabla">
             <table>
                 <thead>
-                    <h5>Transiciones</h5>
                     <tr>
                         <th>ID</th>
                         <th>Estado</th>
@@ -173,8 +201,7 @@ function App() {
                   <td>{funcion.estadoDestino}</td>
                   <td>{funcion.pila}</td>
                   <td>{funcion.aceptacion}</td>
-                  <button onClick={()=>{setfunciones(funciones.filter(obj => obj.id !== funcion.id))}                    
-
+                  <button onClick={()=>{setfunciones(funciones.filter(obj => obj.id !== funcion.id))}
                   }>Delete</button>
                 </tr>
 
@@ -186,24 +213,27 @@ function App() {
      <div className="container">
       <input id="Cadena a probar" type="text" placeholder="Cadena que probara el Automata" value={string} onChange={handlestringChange}/>
       <button onClick={pasoApaso}>Por pasos</button>
-      <button>Todo el proceso</button>
+{/*      <button onClick={push}>Todo el proceso</button>*/}
             <div className="row">
               <div className="col s2">
                 <p>Estado actual:{estadoActual}</p>
               </div>
               <div className="col s2">
-
-              <p>Pila tamaño: {pilasize}</p>{
-                pila.map((elemento) =>(
+              {pila.length <= 0 
+              ? <p>{'La pila esta vacia'}</p> 
+              : pila.map((elemento) =>(
                   <div>{elemento}</div>))
                 }
               </div>
-              <div className="col s2">
+              <div className="col s7">
               {pasos.length <= 0
-            ?<td> {'Aun no hay ningun paso'}</td>
+            ?<p> {'Aun no hay ningun paso'}</p>
             : pasos.map((paso) => (
-                <p>{paso}</p>
-
+              <div className= "col s5 card">
+                <p>Id:{paso.id} Estado: {paso.estado} Entrada: {paso.entry}</p>
+                <p>Tope de la pila: {paso.topStack}</p>
+                <p>{paso.pila}</p>
+              </div>
               ))}
               </div>
             </div>
